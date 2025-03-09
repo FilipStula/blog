@@ -8,10 +8,8 @@ const mongoose = require("mongoose");
 
 app.use(cors());
 app.use(express.json());
-// console.log(process.env.MONGODB_URL);
-
-const blogRoutes = require("./src/routers/blog.routes");
-app.use('/api/blogs', blogRoutes)
+// console.log(process.env.MONGODB_URL); This is how you get stuff from the .env file
+// NOTE: .env file is not visible here, because i put it in .gitignore
 
 const mongoConnectionString = process.env.MONGODB_URL;
 
