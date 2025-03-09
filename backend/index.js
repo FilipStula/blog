@@ -8,7 +8,8 @@ const mongoose = require("mongoose");
 
 app.use(cors());
 app.use(express.json());
-// console.log(process.env.MONGODB_URL); OVAKO SE PRISTUPA STVARIMA U .ENV
+// console.log(process.env.MONGODB_URL); This is how you get stuff from the .env file
+// NOTE: .env file is not visible here, because i put it in .gitignore
 
 const mongoConnectionString = process.env.MONGODB_URL;
 // admin - Hox0gHAFwrMjOqYD
