@@ -1,16 +1,20 @@
 const express = require("express");
 const Blog = require("../model/blog.model");
-const blogRouter = express.Router();
+const router = express.Router();
 
-blogRouter.post("/create", async (req, res) => {
+// Create a new blog
+router.post("/create", async (req, res) => {
   try {
-    console.log(req.body);
-  } catch (error) {}
+    res.send(req.body);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Somethign went wrong" });
+  }
 });
 
 // get all routes
-blogRouter.get("/", (req, res) => {
+router.get("/", (req, res) => {
   res.send("Blog router is here");
 });
 
-module.exports = blogRouter;
+module.exports = router;
