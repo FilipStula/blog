@@ -8,10 +8,13 @@ const mongoose = require("mongoose");
 
 app.use(cors());
 app.use(express.json());
-// console.log(process.env.MONGODB_URL); OVAKO SE PRISTUPA STVARIMA U .ENV
+// console.log(process.env.MONGODB_URL);
+
+const blogRoutes = require("./src/routers/blog.routes");
+app.use('/api/blogs', blogRoutes)
 
 const mongoConnectionString = process.env.MONGODB_URL;
-// admin - Hox0gHAFwrMjOqYD
+
 async function main() {
   await mongoose.connect(mongoConnectionString);
 
