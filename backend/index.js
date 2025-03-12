@@ -14,7 +14,9 @@ app.use(express.json());
 const mongoConnectionString = process.env.MONGODB_URL;
 
 const blogRouter = require("./src/routers/blog.routes");
+const loginRouter = require("./src/routers/login.routes")
 app.use("/api/blogs", blogRouter);
+app.use("/api/login", loginRouter)
 
 async function main() {
   await mongoose.connect(mongoConnectionString);
