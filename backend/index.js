@@ -14,9 +14,11 @@ app.use(express.json());
 const mongoConnectionString = process.env.MONGODB_URL;
 
 const blogRouter = require("./src/routers/blog.routes");
-const loginRouter = require("./src/routers/login.routes")
+const commentRouter = require("./src/routers/comment.routes");
+const userRouter = require("./src/routers/auth.user.route");
 app.use("/api/blogs", blogRouter);
-app.use("/login", loginRouter)
+app.use("/api/comments", commentRouter);
+app.use("/auth/user", userRouter);
 
 async function main() {
   await mongoose.connect(mongoConnectionString);
