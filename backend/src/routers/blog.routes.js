@@ -2,10 +2,12 @@ const express = require("express");
 const Blog = require("../model/blog.model");
 const Comment = require("../model/comment.model");
 const { default: mongoose } = require("mongoose");
+const verifyToken = require("../middleware/verifytoken");
+const isAdmin = require("../middleware/isAdmin");
 const router = express.Router();
 
 // Create a new blog
-router.post("/create", async (req, res) => {
+router.post("/create",verifyToken, isAdmin, async (req, res) => {
   try {
     const newPost = new Blog({ ...req.body });
     await newPost.save();
@@ -20,7 +22,7 @@ router.post("/create", async (req, res) => {
 });
 
 // get all blogs
-router.get("/", async (req, res) => {
+router.get("/",verifyToken,isAdmin, async (req, res) => {
   try {
     const { search, author } = req.query; // implemented search option, will search for title, description, content, author
     let query = {};
@@ -63,7 +65,7 @@ router.get("/", async (req, res) => {
 
 //get single blog based on id
 // also get all the comments for the given post
-router.get("/:id", async (req, res) => {
+router.get("/:id", verifyToken, async (req, res) => {
   try {
     const postId = req.params.id;
     const post = await Blog.findById(postId);
@@ -82,7 +84,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 //delete a post based on id, also delete comments, since if there is no blog there are also no comments
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id",verifyToken, isAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     if (!(await Blog.findById(id))) {
@@ -124,9 +126,17 @@ router.get("/related/:id", async (req, res) => {
   }
 });
 
-// get all blogs
-router.get("/", (req, res) => {
-  res.send("Blog router is here");
+router.post("/update/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!(await Blog.findOneById(id))) {
+      return res.status(404).send({ message: "Blog not found" });
+    }
+    await Blog.updateOne({ _id: id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error in updating post" });
+  }
 });
 
 module.exports = router;

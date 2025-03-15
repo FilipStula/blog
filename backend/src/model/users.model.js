@@ -42,7 +42,7 @@ usersSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSaltSync(saltRounds); //generating salt
   const hash = await bcrypt.hashSync(user.password, salt); //hashing a password
   user.password = hash;
-  next(); //after this is completed, continue where you left off
+  next(); //after this is completed, continue saving
 });
 
 // i cant create arrow funciton here, that is why it didnt work the first time
