@@ -86,7 +86,7 @@ router.delete("/delete/:id", async (req, res) => {
   try {
     const id = req.params.id;
     if (!(await Blog.findById(id))) {
-      res.status(404).send({ message: "Blog not found" }); // if blog not found, just return 
+      res.status(404).send({ message: "Blog not found" }); // if blog not found, just return
       return;
     }
     await Comment.deleteMany({ postId: id }); // for deleting comments
@@ -100,8 +100,8 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
+//gets posts withe hte same first word of the title as the id which is provided as params to the function
 router.get("/related/:id", async (req, res) => {
-  //gets posts withe hte same first word of the title as the id which is provided as params to the function
   try {
     const id = req.params.id;
     const blog = await Blog.findById(id);
@@ -124,7 +124,7 @@ router.get("/related/:id", async (req, res) => {
   }
 });
 
-// get all routes
+// get all blogs
 router.get("/", (req, res) => {
   res.send("Blog router is here");
 });

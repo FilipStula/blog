@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Comment = require("../model/comment.model");
 const Blog = require("../model/blog.model");
+const User = require("../model/users.model");
 
 // every variable named POST, is referencing Blog schema I created
 
@@ -47,7 +48,17 @@ router.get("blog/:postId", async (req, res) => {
 //TODO: When User schema is created, this will be needed to list every ocmment a user has sent
 router.get("/user/:userId", async (req, res) => {
   try {
-  } catch (error) {}
+    const userComments = await Comment.find({ userId: userId });
+    res.status(201).send({
+      message: "Found comments from the specified user",
+      comments: userComments,
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(501)
+      .send({ message: "Something is wrong inside getting comments" });
+  }
 });
 
 router.get("/", async (req, res) => {

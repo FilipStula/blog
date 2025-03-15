@@ -14,6 +14,11 @@ const blogSchema = mongoose.Schema({
   author: {
     type: String,
   },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+    required: true,
+  },
   rating: Number,
   createdAt: {
     type: Date,
@@ -21,7 +26,6 @@ const blogSchema = mongoose.Schema({
   },
 });
 
-
-const Blog = mongoose.model("Blog", blogSchema)
+const Blog = mongoose.model("Blog", blogSchema);
 
 module.exports = Blog;

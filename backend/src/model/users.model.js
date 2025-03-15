@@ -45,6 +45,7 @@ usersSchema.pre("save", async function (next) {
   next(); //after this is completed, continue where you left off
 });
 
+// i cant create arrow funciton here, that is why it didnt work the first time
 usersSchema.methods.comparePassword = async function (plainPassword) {
   return await bcrypt.compare(plainPassword, this.password);
 };

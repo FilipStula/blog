@@ -16,14 +16,11 @@ const commentSchema = mongoose.Schema({
     ref: "Blog", // this specifies from where the ID will be fetched, in this case, the Blog collection
     required: true,
   },
-  /*
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  */
-  userId: String,
 });
 
 const Comment = mongoose.model("Comment", commentSchema);

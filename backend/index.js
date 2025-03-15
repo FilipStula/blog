@@ -11,6 +11,8 @@ app.use(express.json());
 // console.log(process.env.MONGODB_URL); This is how you get stuff from the .env file
 // NOTE: .env file is not visible here, because i put it in .gitignore
 
+app.use(express.json({ limit: "4kb" }));
+
 const mongoConnectionString = process.env.MONGODB_URL;
 
 const blogRouter = require("./src/routers/blog.routes");
