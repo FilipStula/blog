@@ -53,8 +53,12 @@ router.post("/login", async (req, res) => {
 // logout
 router.post("/logout", (req, res) => {
   try {
-    res.clearCookie("token");
-    res.status(201).send({ message: "Logging out successfull", token: token });
+    if (req.headers.cookie) {
+      res.clearCookie("token");
+      res.status(201).send({ message: "Logging out successfull" });
+    } else {
+      res.status(404).send({ message: "User must be logged on" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Something went wrong when loging out" });
