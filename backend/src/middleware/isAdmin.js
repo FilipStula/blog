@@ -6,7 +6,6 @@ const isAdmin = (req, res, next) => {
     console.log(req.role);
     const role = req.role;
     if (role === "admin") {
-      res.status(201).send({ message: "User is admin" });
       next();
     } else res.status(403).send({ message: "User is not authorized" });
   } catch (error) {

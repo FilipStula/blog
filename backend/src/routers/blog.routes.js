@@ -7,7 +7,7 @@ const isAdmin = require("../middleware/isAdmin");
 const router = express.Router();
 
 // Create a new blog
-router.post("/create",verifyToken, isAdmin, async (req, res) => {
+router.post("/create", verifyToken, isAdmin, async (req, res) => {
   try {
     const newPost = new Blog({ ...req.body });
     await newPost.save();
@@ -22,7 +22,7 @@ router.post("/create",verifyToken, isAdmin, async (req, res) => {
 });
 
 // get all blogs
-router.get("/",verifyToken,isAdmin, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const { search, author } = req.query; // implemented search option, will search for title, description, content, author
     let query = {};
@@ -46,16 +46,7 @@ router.get("/",verifyToken,isAdmin, async (req, res) => {
     }
     console.log(query);
     const allPosts = await Blog.find(query).sort({ createdAt: -1 }); // to sort from newest to oldest created
-    res.status(201).send(
-      JSON.stringify(
-        {
-          message: "All posts:",
-          posts: allPosts,
-        },
-        null,
-        2
-      )
-    );
+    res.status(201).send(allPosts);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Something went wrong in all blogs" });
@@ -63,9 +54,29 @@ router.get("/",verifyToken,isAdmin, async (req, res) => {
   }
 });
 
+
+router.get("/search", async(req,res) =>{
+  try {
+    const title = req.query.title;
+    if (!title) {
+      return res.status(400).send({ message: "Title is required" });
+    }
+    const similarBlogs = await Blog.find({
+      title: { $regex: `^${title}`, $options: "i" }, // regex to find blogs with similar title
+    }); 
+    console.log(title);
+    console.log(similarBlogs);
+    return res.status(200).send({ message: "Blogs found", blogs: similarBlogs });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({error: "Something is wrong in searching"});
+  }
+  });
+
+
 //get single blog based on id
 // also get all the comments for the given post
-router.get("/:id", verifyToken, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const postId = req.params.id;
     const post = await Blog.findById(postId);
@@ -84,7 +95,7 @@ router.get("/:id", verifyToken, async (req, res) => {
   }
 });
 //delete a post based on id, also delete comments, since if there is no blog there are also no comments
-router.delete("/delete/:id",verifyToken, isAdmin, async (req, res) => {
+router.delete("/delete/:id", verifyToken, isAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     if (!(await Blog.findById(id))) {
@@ -138,5 +149,6 @@ router.post("/update/:id", async (req, res) => {
     res.status(500).send({ message: "Error in updating post" });
   }
 });
+
 
 module.exports = router;

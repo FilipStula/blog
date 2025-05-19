@@ -6,7 +6,12 @@ const port = process.env.PORT || 3000;
 
 const mongoose = require("mongoose");
 
-app.use(cors());
+const allowedHosts = ["http://localhost:5173", "http://localhost:3000"]
+
+app.use(cors({
+  origin: allowedHosts, 
+  credentials: true,
+}));
 app.use(express.json());
 // console.log(process.env.MONGODB_URL); This is how you get stuff from the .env file
 // NOTE: .env file is not visible here, because i put it in .gitignore

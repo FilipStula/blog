@@ -4,20 +4,28 @@ const router = express.Router();
 const User = require("../model/users.model");
 const Comment = require("../model/comment.model");
 const generateToken = require("../middleware/generateJsonToken");
+const jwt = require("jsonwebtoken");
+const verifyToken = require("../middleware/verifytoken");
+const jwtSecret = process.env.JSONSECRET;
+
+const usernameReg = new RegExp("username")
 
 router.post("/register", async (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const { email, password, username } = req.body;
     const newUser = new User({
-      username: username,
-      password: password,
       email: email,
+      password: password,
+      username: username,
     });
     await newUser.save();
     res.status(201).send({ message: "New user created" });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ message: "Something went wrong" });
+    console.log(error.message);
+    if(usernameReg.test(error.message))
+      res.status(500).send({ message:  "Username already in use"});
+    else
+      res.status(500).send({ message:  "Email already in use"});
   }
 });
 
@@ -36,11 +44,12 @@ router.post("/login", async (req, res) => {
       return;
     }
     // if the user exists, generate JWT
-    const token = await generateToken(user._id, user.role);
+    const token = await generateToken(user._id, user.role, user.username);
     res.cookie("token", token, {
-      httpOnly: true,
+      httpOnly: true, // if set to false, cookie is accessible via console in the browser
       secure: true,
-      sameSite: "Strict",
+      sameSite: "Strict", // when set to Strict, eliminates CSRF attacks
+      path:"/"
     });
 
     res.status(201).send({ message: "User found", user: user, token: token });
@@ -54,8 +63,14 @@ router.post("/login", async (req, res) => {
 router.post("/logout", (req, res) => {
   try {
     if (req.headers.cookie) {
-      res.clearCookie("token");
-      res.status(201).send({ message: "Logging out successfull" });
+      console.log("LOGOUT");
+      res.clearCookie("token", {
+        httpOnly: true, // if set to false, cookie is accessible via console in the browser
+        secure: true,
+        sameSite: "Strict",
+        path:"/"
+      });
+      res.status(200).send({ message: "Logging out successfull" });
     } else {
       res.status(404).send({ message: "User must be logged on" });
     }
@@ -99,6 +114,22 @@ router.delete("/delete/:id", async (req, res) => {
     res
       .status(500)
       .send({ message: "Something went wrong when deleting a user" });
+  }
+});
+
+router.get("/check", verifyToken, (req, res) => {
+  try {
+    console.log(req.headers.cookie);
+    const token = req.headers.cookie.split("=")[1];
+    if (token) {
+      console.log(token);
+      const decoded = jwt.verify(token, jwtSecret);
+      res.json({ username: decoded.username });
+    } else {
+      console.log("No token");
+    }
+  } catch (error) {
+    res.status(404).send({ message: "No token available" });
   }
 });
 
